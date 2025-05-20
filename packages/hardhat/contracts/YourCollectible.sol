@@ -11,19 +11,28 @@ contract YourCollectible is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
     using Counters for Counters.Counter;
 
     Counters.Counter public tokenIdCounter;
-
-    constructor() ERC721("YourCollectible", "YCB") {}
+    address public boss;
+    constructor() ERC721("YourCollectible", "YCB") {
+        boss = msg.sender;
+    }
 
     function _baseURI() internal pure override returns (string memory) {
         return "https://ipfs.io/ipfs/";
     }
 
-    function mintItem(address to, string memory uri) public returns (uint256) {
+    function mintItem(address to, string memory uri) public payable returns (uint256)  {
+        require(msg.value>= 0.1 ether, "Pay 0.1 ETH to mint an NFT");
         tokenIdCounter.increment();
         uint256 tokenId = tokenIdCounter.current();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
         return tokenId;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(address(this).balance>=amount);
+        (bool success, ) = payable(boss).call{value: amount}("");
+        require(success==true, "Withdrawal failed");
     }
 
     // The following functions are overrides required by Solidity.

@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { MyHoldings } from "./_components";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { Balance, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { AddressInput } from "~~/components/scaffold-eth/Input";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { addToIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
@@ -19,6 +21,8 @@ const MyNFTs: NextPage = () => {
     functionName: "tokenIdCounter",
     watch: true,
   });
+
+  const [address, setAddress] = useState("");
 
   const handleMintItem = async () => {
     // circle back to the zero item if we've reached the end of the array
@@ -50,6 +54,11 @@ const MyNFTs: NextPage = () => {
         <div className="px-5">
           <h1 className="text-center mb-8">
             <span className="block text-4xl font-bold">My NFTs</span>
+            <br></br>
+            <div>
+              <AddressInput onChange={setAddress} value={address} placeholder="Input your address" />
+              <Balance address={address} />
+            </div>
           </h1>
         </div>
       </div>
